@@ -9,9 +9,11 @@
                     <div class="ml-10 flex items-baseline space-x-4">
                         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
                         <a href="/" class="rounded-md <?= urlIs('/') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium " aria-current="page">Home</a>
-                        <a href="/about" class="rounded-md <?= urlIs('/about.php') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">About</a>
-                        <a href="/notes" class="rounded-md <?= urlIs('/index.php') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Notes</a>
-                        <a href="/contact" class="rounded-md <?= urlIs('/contact.php') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Contact</a>
+                        <a href="/about" class="rounded-md <?= urlIs('/about') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">About</a>
+                        <?php if ($_SESSION['user'] ?? false) : ?>
+                            <a href="/notes" class="rounded-md <?= urlIs('/notes') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Notes</a>
+                        <?php endif; ?>
+                        <a href="/contact" class="rounded-md <?= urlIs('/contact') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Contact</a>
                     </div>
                 </div>
             </div>
@@ -28,17 +30,17 @@
                     <!-- Profile dropdown -->
                     <div class="relative ml-3">
                         <div>
-                            <button type="button" class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <?php if ($_SESSION['user'] ?? false) : ?>
-<!--                                    <span class="absolute -inset-1.5"></span>-->
-<!--                                    <span class="sr-only">Open user menu</span>-->
+                            <?php if ($_SESSION['user'] ?? false) : ?>
+                                <button type="button" class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="absolute -inset-1.5"></span>
+                                    <span class="sr-only">Open user menu</span>
                                     <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                <?php else: ?>
-                                    <a href="/register" class="text-white">Register</a>
-                                <?php endif; ?>
-                            </button>
+                                </button>
+                            <?php else: ?>
+                                <a href="/register" class="rounded-md <?= urlIs('/register') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Register</a>
+                                <a href="/login" class="rounded-md <?= urlIs('/login') ? 'bg-gray-900 text-white' : 'text-gray-300' ?> hover:bg-gray-700 px-3 py-2 text-sm font-medium hover:text-white">Log in</a>
+                            <?php endif; ?>
                         </div>
-
                         <!--
                           Dropdown menu, show/hide based on menu state.
 
@@ -57,6 +59,15 @@
 <!--                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>-->
 <!--                        </div>-->
                     </div>
+
+                    <?php if ($_SESSION['user'] ?? false) : ?>
+                        <div class="ml-3">
+                            <form action="/session" method="POST">
+                                <input type="hidden" name="_method" value="DELETE" />
+                                <button class="text-white">Log Out</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="-mr-2 flex md:hidden">

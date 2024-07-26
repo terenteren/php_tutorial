@@ -19,33 +19,33 @@ if (! Validator::string($password, 7, 255)) {
 }
 
 if (! empty($errors)) {
-    return view('registration/create', [
+    return view('session/create', [
         'errors' => $errors
     ]);
 }
-
 
 $user = $db->query('select * from users where email = :email', [
     'email' => $email
 ])->find();
 
 if ($user) {
-    header('Location: /login');
-    exit();
-} else {
-    $name = explode('@', $email)[0];
-    $db->query('INSERT INTO users (email, name, password) VALUES (:email, :name, :password)', [
-        'email' => $email,
-        'name' => $name,
-        'password' => password_hash($password, PASSWORD_BCRYPT)
-    ]);
+    if (password_verify($password, $user['password'])) {
+        login([
+            'email' => $email
+        ]);
 
-    login($user);
-
-    header('Location: /');
-    exit();
+        header('Location: /');
+        exit();
+    }
 }
 
+
+
+return view('session/create', [
+    'errors' => [
+        'email' => 'No matching account found for that email address and password.'
+    ]
+]);
 
 
 
