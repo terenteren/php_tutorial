@@ -1,18 +1,25 @@
 <?php
 
 use Core\App;
+use Core\Authenticator;
 use Core\Database;
 use Core\Validator;
-use Http\Forms\LoginForm;
 
 $db = App::resolve(Database::class);
 
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$form = new LoginForm();
+$errors = [];
+if (!Validator::email($email)) {
+    $errors['email'] = 'Please provide a valid email address.';
+}
 
-if (! $form->validate($email, $password)) {
+if (!Validator::string($password, 7, 255)) {
+    $errors['password'] = 'Please provide a password of at least seven characters.';
+}
+
+if (! empty($errors)) {
     return view('registration/create', [
         'errors' => $errors
     ]);
@@ -23,30 +30,17 @@ $user = $db->query('select * from users where email = :email', [
 ])->find();
 
 if ($user) {
-    header('Location: /login');
+    header('location: /');
     exit();
 } else {
 
-    $db->query('INSERT INTO users (email, name, password) VALUES (:email, :name, :password)', [
+    $user = $db->query('INSERT INTO users(email, password) VALUES(:email, :password)', [
         'email' => $email,
-        'name' => explode('@', $email)[0],
         'password' => password_hash($password, PASSWORD_BCRYPT)
     ]);
 
-    // 삽입된 사용자 ID 가져오기
-    $userId = $db->lastInsertId();
+    (new Authenticator)->login(['email' => $email]);
 
-    // 삽입된 사용자 정보 조회
-    $user = $db->query('select * from users where id = :id', [
-        'id' => $userId
-    ])->find();
-
-    login($user);
-
-    header('Location: /');
+    header('location: /');
     exit();
 }
-
-
-
-
